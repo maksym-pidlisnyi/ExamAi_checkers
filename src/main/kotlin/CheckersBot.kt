@@ -1,15 +1,25 @@
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
-import com.google.gson.JsonObject
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 class CheckersBot {
 
+    private val TEAM_NAME = "Поработать по человечиски"
     private lateinit var game: Game
-    private val client = OkHttpClient()
+    private lateinit var player: Player
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(15000, TimeUnit.MILLISECONDS)          // TODO maybe change timeout
+        .writeTimeout(60000, TimeUnit.MILLISECONDS)            // TODO or set to default
+        .readTimeout(60000, TimeUnit.MILLISECONDS)
+        .build()
     private val gson = Gson()
+
+
+    // TODO add try catch for safety
 
     // gets game info
     fun getinfo() : Game {
@@ -32,12 +42,48 @@ class CheckersBot {
     }
 
     // connect to the game    val json = gson.fromJson(response.body.toString(), JsonObject::class.java).get("data").getAsJsonObject()
-    fun connect() {
+    fun connect() : Player {
+        val body = "test".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url("http://localhost:8081/game?team_name=$TEAM_NAME")
+            .header("Accept", "application/json")
+            .post(body)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+            for ((name, value) in response.headers) {
+                println("$name: $value")
+            }
+
+            var jsonS = response.body!!.string()
+            println(jsonS)
+            jsonS = jsonS.replace("{\"status\": \"success\", \"data\": ", "").replace("}}", "}")
+            player = gson.fromJson(jsonS, Player::class.java)
+            println(player)
+            return player
+        }
 
     }
 
     // makes move
     fun move(from: Int, to: Int) {
+        val body = "{\n    \"move\": [$from, $to]\n}".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url("http://localhost:8081/move")
+            .header("Accept", "application/json")
+            .addHeader("Authorization", "Token ${player.token}")
+            .post(body)
+            .build()
 
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+            for ((name, value) in response.headers) {
+                println("$name: $value")
+            }
+
+            val jsonS = response.body!!.string()
+            println(jsonS)
+        }
     }
 }
