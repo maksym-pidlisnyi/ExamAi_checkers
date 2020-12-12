@@ -14,9 +14,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test-testng"))
-    implementation("com.fasterxml.jackson.core:jackson-core:2.6.3")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.6.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.6.3")
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+    implementation("com.google.code.gson:gson:2.8.6")
 }
 
 tasks.test {
