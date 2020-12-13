@@ -6,9 +6,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class CheckersBot {
+class CheckersBot (val teamName: String) : Runnable {
 
-    private val TEAM_NAME = "Поработать по человечиски"
+    private val TEAM_NAME = this.teamName
     private lateinit var game: Game
     private lateinit var player: Player
     private val client = OkHttpClient.Builder()
@@ -22,7 +22,7 @@ class CheckersBot {
     // TODO add try catch for safety
 
     // gets game info
-    fun getinfo() : Game {
+    private fun getinfo() : Game {
         val request = Request.Builder()
             .url("http://localhost:8081/game")
             .build()
@@ -42,7 +42,7 @@ class CheckersBot {
     }
 
     // connect to the game    val json = gson.fromJson(response.body.toString(), JsonObject::class.java).get("data").getAsJsonObject()
-    fun connect() : Player {
+    private fun connect() : Player {
         val body = "test".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
             .url("http://localhost:8081/game?team_name=$TEAM_NAME")
@@ -67,7 +67,7 @@ class CheckersBot {
     }
 
     // makes move
-    fun move(from: Int, to: Int) {
+    private fun move(from: Int, to: Int) {
         val body = "{\n    \"move\": [$from, $to]\n}".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
             .url("http://localhost:8081/move")
@@ -96,9 +96,33 @@ class CheckersBot {
             getinfo()
             board = Board(game.board)
             if (game.whose_turn == player.color) {
-                TODO() // move
+                // TODO() minimax move
+
+                ///////
+                var from = 0
+                var to = 0
+                if (player.color == "RED") {
+                    from = 9
+                    to = 13
+                    move(9, 13)
+                    println("Moved from 9 to 13")                   // Just for testing purposes
+
+                } else {
+                    Thread.sleep(5000)
+                    from = 24
+                    to = 28
+                    move(24, 28)
+                    println("Moved from 24 to 28")
+                }
+                ///////
             } else
-                continue
+                Thread.sleep(10000)
+                break
+                //continue
         }
+    }
+
+    override fun run() {
+        startBattle()
     }
 }
