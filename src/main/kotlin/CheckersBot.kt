@@ -86,4 +86,19 @@ class CheckersBot {
             println(jsonS)
         }
     }
+
+    fun startBattle() {
+        connect()
+        getinfo()
+        var board = Board(game.board)
+
+        while (game.is_started && !game.is_finished) {
+            getinfo()
+            board = Board(game.board)
+            if (game.whose_turn == player.color) {
+                TODO() // move
+            } else
+                continue
+        }
+    }
 }
