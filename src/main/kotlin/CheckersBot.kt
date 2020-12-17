@@ -6,7 +6,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class CheckersBot (val teamName: String) : Runnable {
+class CheckersBot (val teamName: String) {
 
     private val TEAM_NAME = this.teamName
     private lateinit var game: Game
@@ -116,13 +116,8 @@ class CheckersBot (val teamName: String) : Runnable {
                 }
                 ///////
             } else
-                Thread.sleep(10000)
-                break
-                //continue
+                continue
         }
     }
 
-    override fun run() {
-        startBattle()
-    }
 }
