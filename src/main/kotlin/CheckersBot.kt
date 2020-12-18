@@ -41,7 +41,7 @@ class CheckersBot (val teamName: String) {
         }
     }
 
-    // connect to the game    val json = gson.fromJson(response.body.toString(), JsonObject::class.java).get("data").getAsJsonObject()
+    // connect to the game
     private fun connect() : Player {
         val body = "test".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
@@ -115,6 +115,8 @@ class CheckersBot (val teamName: String) {
                     println("Moved from 24 to 28")
                 }
                 ///////
+
+
             } else
                 continue
         }
