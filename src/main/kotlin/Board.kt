@@ -46,6 +46,26 @@ data class Board(val cells: Array<Cell>) {
         return cell.row % 2 == 0
     }
 
+    private fun getRed(): Int {
+        var counter = 0;
+        for(cell in board){
+            if(cell.color == "RED"){
+                counter ++;
+            }
+        }
+        return counter;
+    }
+
+    private fun getBlack(): Int {
+        var counter = 0;
+        for(cell in board){
+            if(cell.color == "BLACK"){
+                counter ++;
+            }
+        }
+        return counter;
+    }
+
     private fun generateMoves(playerColor: String, cell: Cell): ArrayList<Move> {
         val result = ArrayList<Move>()
         //find valid not ling moves

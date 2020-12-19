@@ -87,6 +87,8 @@ class CheckersBot (val teamName: String) {
         }
     }
 
+
+
     fun startBattle() {
         connect()
         getinfo()
