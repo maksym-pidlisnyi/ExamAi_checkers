@@ -1,5 +1,6 @@
 import java.util.*
 
+
 data class Board(val cells: Array<Cell>) {
     private var board: Array<Cell> = Array<Cell>(4 * 8) { Cell("NONE", 0, 0, false, 0) }
 
@@ -24,22 +25,23 @@ data class Board(val cells: Array<Cell>) {
         return row * 4 + col + 1
     }
 
-    private fun generateAllMoves(color: String): ArrayList<Move> {
+    fun generateAllMoves(color: String): ArrayList<Move> {
         val resultList = arrayListOf<Move>()
         for (cell in board) {
             if (cell.color == color) {
-                resultList.addAll(generateMoves(color, cell))
+                resultList.addAll(generateMoves(cell))
             }
         }
         return resultList
     }
 
-    private fun getUp(i: Int, j: Int): Int {
-        return if (i % 2 == 0) j else j - 1
-    }
 
-    private fun getDown(i: Int, j: Int): Int {
-        return if (i % 2 == 0) j + 1 else j
+    private fun getUpDown(i: Int, j: Int, direction: String): Int {
+        if (direction.startsWith("Up")) {
+            return if (i % 2 == 0) j else j - 1
+        } else {
+            return if (i % 2 == 0) j + 1 else j
+        }
     }
 
     private fun isEven(cell: Cell): Boolean {
@@ -48,8 +50,8 @@ data class Board(val cells: Array<Cell>) {
 
     private fun getRed(): Int {
         var counter = 0;
-        for(cell in board){
-            if(cell.color == "RED"){
+        for (cell in board) {
+            if (cell.color == "RED") {
                 counter ++;
             }
         }
@@ -58,84 +60,80 @@ data class Board(val cells: Array<Cell>) {
 
     private fun getBlack(): Int {
         var counter = 0;
-        for(cell in board){
-            if(cell.color == "BLACK"){
-                counter ++;
+        for (cell in board) {
+            if (cell.color == "BLACK") {
+                counter++;
             }
         }
         return counter;
     }
 
-    private fun generateMoves(playerColor: String, cell: Cell): ArrayList<Move> {
-        val result = ArrayList<Move>()
-        //find valid not ling moves
-        val rowChange = if (playerColor == "RED") 1 else -1
-        val enemyColor = if (rowChange == 1) "BLACK" else "RED"
-        if (!cell.king) {
-            var row = cell.row + rowChange
-            if (row in 0..7) {
+    fun singleMove(cell: Cell, direction: String, enemyColor: String): Move? {
+        var pos: Int
+        var killPos: Int
+        var delta = if (direction == "UpLeft" || direction == "DownLeft") -1 else 1
+        var i: Int = cell.row + delta
+        var j: Int = getUpDown(cell.row, cell.column, direction)
+        if (i in 0..7 && j >= 0 && j < 4) {
+            pos = getPosition(i, j)
+            if (board[pos - 1].color == enemyColor) {
+                //Move one more
+                j = getUpDown(i, j, direction)
+                i += delta
+                if (i in 0..7 && j >= 0 && j < 4) {
+                    killPos = pos
+                    pos = getPosition(i, j)
 
-                //↙↘           daun
-                var col = getDown(cell.row, cell.column)
-                var pos = getPosition(row, col)
-                if (col < 4) {
-                    var nCell = board[pos - 1]
-                    if (nCell.color == enemyColor) {
-                        //↙↘           daun one more
-                        val killPos = pos
-                        col = getDown(row, col)
-                        row += rowChange
-                        pos = getPosition(row, col)
-                        if (row in 0..7 && col >= 0 && col < 4) {
-                            nCell = board[pos - 1]
-
-                            //if empty make move
-                            if (nCell.color == "NONE") {
-                                result.add(Move(cell.position, pos))
-                            }
-                        }
-                    } else if (nCell.color == "NONE") {
-                        result.add(Move(cell.position, pos))
+                    //if empty make move
+                    if (board[pos - 1].color == "NONE") {
+                        return Move(cell.position, pos)
                     }
                 }
-
-                //↖↗           BBePx
-                row = cell.row + rowChange
-                col = getUp(cell.row, cell.column)
-                pos = getPosition(row, col)
-                if (col >= 0) {
-                    var nCell = board[pos - 1]
-                    if (nCell.color == enemyColor) {
-                        //↖↗           BBePx one more
-                        val killPos = pos
-                        col = getUp(row, col)
-                        row += rowChange
-                        pos = getPosition(row, col)
-                        if (row in 0..7 && col >= 0 && col < 4) {
-                            nCell = board[pos - 1]
-
-                            //if empty make move
-                            if (nCell.color == "NONE") {
-                                result.add(Move(cell.position, pos))
-                            }
-                        }
-                    } else if (nCell.color == "NONE") {
-                        result.add(Move(cell.position, pos))
-                    }
-                }
+            } else if (board[pos - 1].color == "NONE") {
+                return Move(cell.position, pos)
             }
         }
-        //else {
-//            find valid king moves
-        //↗           BBePx
-//            result.addAll(findKingMoves(cell.position, cell.row, cell.column, enemyColor, Direction.UpRight))
-//            //↘           daun
-//            result.addAll(findKingMoves(cell.position, cell.row, cell.column, enemyColor, Direction.DownRight))
-//            //↖           BBePx
-//            result.addAll(findKingMoves(cell.position, cell.row, cell.column, enemyColor, Direction.UpLeft))
-//            //↙           daun
-//            result.addAll(findKingMoves(cell.position, cell.row, cell.column, enemyColor, Direction.DownLeft))
-        // }
+
+        return null
+
+    }
+
+
+    private fun generateMoves(cell: Cell): ArrayList<Move> {
+        val result = ArrayList<Move>()
+        val enemyColor = if (cell.color == "RED") "BLACK" else "RED"
+        if (cell.color == "RED") {
+            var move = singleMove(cell, "UpRight", enemyColor);
+            if (move != null)
+                result.add(move);
+            move = singleMove(cell, "DownRight", enemyColor);
+            if (move != null)
+                result.add(move);
+            if (cell.king) {
+                move = singleMove(cell, "UpLeft", enemyColor);
+                if (move != null)
+                    result.add(move)
+                move = singleMove(cell, "DownLeft", enemyColor);
+                if (move != null)
+                    result.add(move)
+            }
+        } else if (cell.color == "BLACK") {
+            var move = singleMove(cell, "UpLeft", enemyColor);
+            if (move != null)
+                result.add(move);
+            move = singleMove(cell, "DownLeft", enemyColor);
+            if (move != null)
+                result.add(move);
+            if (cell.king) {
+                move = singleMove(cell, "UpRight", enemyColor);
+                if (move != null)
+                    result.add(move)
+                move = singleMove(cell, "DownRight", enemyColor);
+                if (move != null)
+                    result.add(move)
+            }
+        }
+
         return result
     }
 

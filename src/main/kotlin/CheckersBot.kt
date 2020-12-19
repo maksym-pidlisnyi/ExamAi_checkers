@@ -97,6 +97,7 @@ class CheckersBot (val teamName: String) {
         while (game.is_started && !game.is_finished) {
             getinfo()
             board = Board(game.board)
+            board.generateAllMoves(game.whose_turn)
             if (game.whose_turn == player.color) {
                 // TODO() minimax move
 
