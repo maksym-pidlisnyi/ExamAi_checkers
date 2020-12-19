@@ -122,4 +122,5 @@ class CheckersBot (val teamName: String) {
         }
     }
 
+
 }
