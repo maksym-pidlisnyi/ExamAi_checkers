@@ -52,26 +52,26 @@ data class Board(val cells: Array<Cell>) {
         var counter = 0;
         for (cell in board) {
             if (cell.color == "RED") {
-                counter ++;
+                counter++
             }
         }
-        return counter;
+        return counter
     }
 
     private fun getBlack(): Int {
         var counter = 0;
         for (cell in board) {
             if (cell.color == "BLACK") {
-                counter++;
+                counter++
             }
         }
-        return counter;
+        return counter
     }
 
     fun singleMove(cell: Cell, direction: String, enemyColor: String): Move? {
         var pos: Int
-        var killPos: Int
-        var delta = if (direction == "UpLeft" || direction == "DownLeft") -1 else 1
+        val killPos: Int
+        val delta = if (direction == "UpLeft" || direction == "DownLeft") -1 else 1
         var i: Int = cell.row + delta
         var j: Int = getUpDown(cell.row, cell.column, direction)
         if (i in 0..7 && j >= 0 && j < 4) {
@@ -103,32 +103,32 @@ data class Board(val cells: Array<Cell>) {
         val result = ArrayList<Move>()
         val enemyColor = if (cell.color == "RED") "BLACK" else "RED"
         if (cell.color == "RED") {
-            var move = singleMove(cell, "UpRight", enemyColor);
+            var move = singleMove(cell, "UpRight", enemyColor)
             if (move != null)
-                result.add(move);
-            move = singleMove(cell, "DownRight", enemyColor);
+                result.add(move)
+            move = singleMove(cell, "DownRight", enemyColor)
             if (move != null)
-                result.add(move);
+                result.add(move)
             if (cell.king) {
-                move = singleMove(cell, "UpLeft", enemyColor);
+                move = singleMove(cell, "UpLeft", enemyColor)
                 if (move != null)
                     result.add(move)
-                move = singleMove(cell, "DownLeft", enemyColor);
+                move = singleMove(cell, "DownLeft", enemyColor)
                 if (move != null)
                     result.add(move)
             }
         } else if (cell.color == "BLACK") {
-            var move = singleMove(cell, "UpLeft", enemyColor);
+            var move = singleMove(cell, "UpLeft", enemyColor)
             if (move != null)
-                result.add(move);
-            move = singleMove(cell, "DownLeft", enemyColor);
+                result.add(move)
+            move = singleMove(cell, "DownLeft", enemyColor)
             if (move != null)
-                result.add(move);
+                result.add(move)
             if (cell.king) {
-                move = singleMove(cell, "UpRight", enemyColor);
+                move = singleMove(cell, "UpRight", enemyColor)
                 if (move != null)
                     result.add(move)
-                move = singleMove(cell, "DownRight", enemyColor);
+                move = singleMove(cell, "DownRight", enemyColor)
                 if (move != null)
                     result.add(move)
             }
