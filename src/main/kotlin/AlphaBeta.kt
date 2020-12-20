@@ -18,7 +18,13 @@ fun getAIMove(
 
     for (move in moves) {
 
-        var prevCellArr = board.cells
+        var prevCellArr : MutableList<Cell> = mutableListOf()
+
+        for(cell in board.cells){
+            prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+        }
+
+
         if (move.cellToAttack != null) {
             for (cell in prevCellArr) {
                 if (cell.position == move.cellToAttack!!.position) {
@@ -40,7 +46,7 @@ fun getAIMove(
             }
         }
 
-        val moved = Board(prevCellArr) //getting a copy of the board and making the current move in the copy
+        val moved = Board(prevCellArr.toTypedArray()) //getting a copy of the board and making the current move in the copy
 
         scores[i] = getScore(moved, depth, true, alpha, beta, color)  //false -- isKingMove
 
@@ -78,7 +84,11 @@ fun getScore(
         for (move in moves) {
 
             //////Here you make move
-            var prevCellArr = board.cells
+            var prevCellArr : MutableList<Cell> = mutableListOf()
+
+            for(cell in board.cells){
+                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+            }
             if (move.cellToAttack != null) {
                 for (cell in prevCellArr) {
                     if (cell.position == move.cellToAttack!!.position) {
@@ -101,7 +111,7 @@ fun getScore(
             }
             ////*************
 
-            val score = getScore(Board(prevCellArr), depth - 1, false, alpha, beta, "BLACK")     //isKingMode
+            val score = getScore(Board(prevCellArr.toTypedArray()), depth - 1, false, alpha, beta, "BLACK")     //isKingMode
             best = Math.max(best, score)
             alpha = Math.max(alpha, score) //update alpha with maximum value
             if (beta <= alpha) break
@@ -115,7 +125,11 @@ fun getScore(
 
 
             //////Here
-            var prevCellArr = board.cells
+            var prevCellArr : MutableList<Cell> = mutableListOf()
+
+            for(cell in board.cells){
+                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+            }
             if (move.cellToAttack != null) {
                 for (cell in prevCellArr) {
                     if (cell.position == move.cellToAttack!!.position) {
@@ -138,7 +152,7 @@ fun getScore(
             }
             ////*************
 
-            val score = getScore(Board(prevCellArr), depth - 1, true, alpha, beta, "RED")
+            val score = getScore(Board(prevCellArr.toTypedArray()), depth - 1, true, alpha, beta, "RED")
             best = Math.min(best, score)
             beta = Math.min(beta, score) //update beta with the minimum value
             if (beta <= alpha) break
