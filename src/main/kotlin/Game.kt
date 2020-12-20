@@ -1,5 +1,13 @@
-data class Game(var status : String, val whose_turn : String, val winner : String,
-           val board : Array<Cell>, val  available_time : Double, var is_started : Boolean, val is_finished : Boolean)
+data class Game(
+    var status: String,
+    val whose_turn: String,
+    val winner: String,
+    val board: Array<Cell>,
+    val available_time: Double,
+    val last_move: LastMove?,
+    var is_started: Boolean,
+    val is_finished: Boolean
+)
 //{"status": "success",
 //    "data": {"status": "Not yet started",
 //    "whose_turn": "RED",

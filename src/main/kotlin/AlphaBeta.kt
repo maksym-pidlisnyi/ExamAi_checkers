@@ -166,10 +166,10 @@ import java.lang.Float.POSITIVE_INFINITY
 
 
 fun getPlayerScore(board: Board, color: String): Float {
-    if (color == "RED") {
-        return board.getRed().toFloat() + board.getRedKings() * 2 - board.getBlack().toFloat() + board.getBlackKings() * 2
+    return if (color == "RED") {
+        board.getRed().toFloat() + board.getRedKings() * 2 - board.getBlack().toFloat() + board.getBlackKings() * 2
     } else {
-        return board.getBlack().toFloat() + board.getBlackKings() * 2 - board.getRed().toFloat() + board.getRedKings() * 2
+        board.getBlack().toFloat() + board.getBlackKings() * 2 - board.getRed().toFloat() + board.getRedKings() * 2
     }
 }
 
@@ -346,7 +346,9 @@ fun getMinimaxMove(
 ): Move? //picking and returning a move from all possible moves based on the current state of the board
 {
     var moves: List<Move> = board.generateAllMoves(board.color)
-    require(moves.isNotEmpty())
+//    require(moves.isNotEmpty())
+    if (moves.isEmpty())
+        return null
 
     if (board.attackMoves.isNotEmpty()) moves = board.attackMoves
 

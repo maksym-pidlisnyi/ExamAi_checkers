@@ -36,6 +36,7 @@ class CheckersBot(val teamName: String) : Runnable {
             jsonS = jsonS.replace("{\"status\": \"success\", \"data\": ", "").replace("}}", "}")
             game = gson.fromJson(jsonS, Game::class.java)
 //            println(game)
+//            println("Last move from ${game.last_move?.getLastMoveFrom()} to ${game.last_move?.getLastMoveTo()}")
             return game
         }
     }
@@ -104,10 +105,12 @@ class CheckersBot(val teamName: String) : Runnable {
 
                 board = Board(game.board, player.color)
 
-                  //val move =   if (player.color == "RED") getAIMoveRed(board, 4, game.whose_turn) else getAIMoveBlack(board, 6, game.whose_turn)
-                    val move = getMinimaxMove(board, 6)
+                //val move =   if (player.color == "RED") getAIMoveRed(board, 4, game.whose_turn) else getAIMoveBlack(board, 6, game.whose_turn)
+                val move = getMinimaxMove(board, 6)
+                if (move != null) {
+                    move(move.from.position, move.to.position)
+                }
 
-                move(move!!.from.position, move.to.position)
 
             } else
                 continue
