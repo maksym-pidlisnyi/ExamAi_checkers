@@ -3,10 +3,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class CheckersBot (val teamName: String) {
+class CheckersBot(val teamName: String) : Runnable {
 
     private val TEAM_NAME = this.teamName
     private lateinit var game: Game
@@ -27,16 +26,16 @@ class CheckersBot (val teamName: String) {
             .url("http://localhost:8081/game")
             .build()
         client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("Unexpected code $response")
-            for ((name, value) in response.headers) {
-                println("$name: $value")
-            }
+//            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+//            for ((name, value) in response.headers) {
+//                println("$name: $value")
+//            }
 
             var jsonS = response.body!!.string()
-            println(jsonS)
+//            println(jsonS)
             jsonS = jsonS.replace("{\"status\": \"success\", \"data\": ", "").replace("}}", "}")
             game = gson.fromJson(jsonS, Game::class.java)
-            println(game)
+//            println(game)
             return game
         }
     }
@@ -51,16 +50,17 @@ class CheckersBot (val teamName: String) {
             .build()
 
         client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("Unexpected code $response")
-            for ((name, value) in response.headers) {
-                println("$name: $value")
-            }
+//            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+//            for ((name, value) in response.headers) {
+//                println("$name: $value")
+//            }
 
             var jsonS = response.body!!.string()
-            println(jsonS)
+//            println(jsonS)
             jsonS = jsonS.replace("{\"status\": \"success\", \"data\": ", "").replace("}}", "}")
             player = gson.fromJson(jsonS, Player::class.java)
-            println(player)
+//            println(player)
+            println("Connected to the game - $teamName - ${player.color}")
             return player
         }
 
@@ -77,13 +77,15 @@ class CheckersBot (val teamName: String) {
             .build()
 
         client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("Unexpected code $response")
-            for ((name, value) in response.headers) {
-                println("$name: $value")
-            }
+//            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+//            for ((name, value) in response.headers) {
+//                println("$name: $value")
+//            }
 
             val jsonS = response.body!!.string()
+            println("\nMaking move from $from to $to")
             println(jsonS)
+            println()
         }
     }
 
@@ -97,32 +99,26 @@ class CheckersBot (val teamName: String) {
         while (game.is_started && !game.is_finished) {
             getinfo()
             board = Board(game.board)
-            board.generateAllMoves(game.whose_turn)
             if (game.whose_turn == player.color) {
                 // TODO() minimax move
 
-                ///////
-                var from = 0
-                var to = 0
-                if (player.color == "RED") {
-                    from = 9
-                    to = 13
-                    move(9, 13)
-                    println("Moved from 9 to 13")                   // Just for testing purposes
-
-                } else {
-                    Thread.sleep(5000)
-                    from = 24
-                    to = 28
-                    move(24, 28)
-                    println("Moved from 24 to 28")
+                val moves = board.generateAllMoves(game.whose_turn)
+                println("Available moves: ")
+                for (i in moves.indices) {
+                    print(moves[i])
+                    print(", ")
                 }
-                ///////
-
+                val from = moves[0].from
+                val to = moves[0].to
+                move(from, to)
 
             } else
                 continue
         }
+    }
+
+    override fun run() {
+        startBattle()
     }
 
 

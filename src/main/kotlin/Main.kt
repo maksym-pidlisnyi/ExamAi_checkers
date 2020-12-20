@@ -1,6 +1,6 @@
 fun main(args: Array<String>) {
-    val bot = CheckersBot("Поработить человечество")
-    bot.startBattle()
+//    val bot = CheckersBot("Поработить человечество")
+//    bot.startBattle()
     /*
     val cells = arrayOf(
         Cell(color="NONE", row=0, column=0, king=false, position=1),
@@ -45,4 +45,9 @@ fun main(args: Array<String>) {
         println(moves[i])
     }
 */
+
+    val firstBot = Thread(CheckersBot("Player1"))
+    val secondBot = Thread(CheckersBot("Player2"))
+    firstBot.start()
+    secondBot.start()
 }
