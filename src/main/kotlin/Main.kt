@@ -1,4 +1,4 @@
-fun main(args: Array<String>) {
+fun main() {
     val bot = CheckersBot("NotDeepBlueButAlsoGood")
     bot.startBattle()
 }

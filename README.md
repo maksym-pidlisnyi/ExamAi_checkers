@@ -5,3 +5,5 @@ How to run?
 * Or click run button in Main.kt file (on the left from the main function)
 
 ## Team name - **NotDeepBlueButAlsoGood**
+
+### Repo: https://github.com/maksym-pidlisnyi/ExamAi_checkers

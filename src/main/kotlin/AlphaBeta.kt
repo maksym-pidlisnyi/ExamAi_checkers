@@ -38,11 +38,11 @@ fun getMinimaxScore(
     board: Board,
     depth: Int,
     maxing: Boolean,
-    alpha: Double,
-    beta: Double
+    alpha1: Double,
+    beta1: Double
 ): Double {
-    var alpha = alpha
-    var beta = beta
+    var alpha = alpha1
+    var beta = beta1
     val moves: List<Move> = board.generateAllMoves(board.color)
 
     val playerColor = board.color
