@@ -167,9 +167,9 @@ fun getScore(
 
 fun getPlayerScore(board: Board, color: String): Float {
     if (color == "RED") {
-        return board.getRed().toFloat() - board.getBlack().toFloat()
+        return board.getRed().toFloat()+board.getRedKings()*2 - board.getBlack().toFloat()+board.getBlackKings()*2
     } else {
-        return board.getBlack().toFloat() - board.getRed().toFloat()
+        return board.getBlack().toFloat()+board.getBlackKings()*2 - board.getRed().toFloat()+board.getRedKings()*2
     }
 }
 

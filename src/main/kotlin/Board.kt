@@ -48,7 +48,17 @@ data class Board(val cells: Array<Cell>) {
     fun getRed(): Int {
         var counter = 0
         for (cell in board) {
-            if (cell.color == "RED") {
+            if (cell.color == "RED" && !cell.king) {
+                counter++
+            }
+        }
+        return counter
+    }
+
+    fun getRedKings(): Int {
+        var counter = 0
+        for (cell in board) {
+            if (cell.color == "RED" && cell.king) {
                 counter++
             }
         }
@@ -58,7 +68,17 @@ data class Board(val cells: Array<Cell>) {
     fun getBlack(): Int {
         var counter = 0
         for (cell in board) {
-            if (cell.color == "BLACK") {
+            if (cell.color == "BLACK" && !cell.king) {
+                counter++
+            }
+        }
+        return counter
+    }
+
+    fun getBlackKings(): Int {
+        var counter = 0
+        for (cell in board) {
+            if (cell.color == "BLACK" && cell.king) {
                 counter++
             }
         }
