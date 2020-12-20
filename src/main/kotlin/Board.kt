@@ -3,6 +3,7 @@ import java.util.*
 
 data class Board(val cells: Array<Cell>) {
     private var board: Array<Cell> = Array(4 * 8) { Cell("NONE", 0, 0, false, 0) }
+    var attackMoves: MutableList<Move> = mutableListOf()
 
     init {
         for (cell in cells) {
@@ -82,7 +83,9 @@ data class Board(val cells: Array<Cell>) {
                     //todo var dest_cell = board[pos - 1]
                     //if empty cell -> make move
                     if (board[pos - 1].color == "NONE") {
-                        return Move(cell, board[pos - 1], board[killPos - 1])   //cell to kill
+                        val move = Move(cell, board[pos - 1], board[killPos - 1])   //cell to kill
+                        attackMoves.add(move)
+                        return move
                     }
                 }
             } else if (board[pos - 1].color == "NONE") {
