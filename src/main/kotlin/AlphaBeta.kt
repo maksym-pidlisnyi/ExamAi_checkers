@@ -167,9 +167,9 @@ import java.lang.Float.POSITIVE_INFINITY
 
 fun getPlayerScore(board: Board, color: String): Float {
     if (color == "RED") {
-        return board.getRed().toFloat()+board.getRedKings()*2 - board.getBlack().toFloat()+board.getBlackKings()*2
+        return board.getRed().toFloat() + board.getRedKings() * 2 - board.getBlack().toFloat() + board.getBlackKings() * 2
     } else {
-        return board.getBlack().toFloat()+board.getBlackKings()*2 - board.getRed().toFloat()+board.getRedKings()*2
+        return board.getBlack().toFloat() + board.getBlackKings() * 2 - board.getRed().toFloat() + board.getRedKings() * 2
     }
 }
 
@@ -342,14 +342,13 @@ fun getPlayerScore(board: Board, color: String): Float {
 
 fun getMinimaxMove(
     board: Board,
-    depth: Int,
-    color: String
+    depth: Int
 ): Move? //picking and returning a move from all possible moves based on the current state of the board
 {
-    var moves: List<Move> = board.generateAllMoves(color)
+    var moves: List<Move> = board.generateAllMoves(board.color)
     require(moves.isNotEmpty())
 
-    if(board.attackMoves.isNotEmpty()) moves = board.attackMoves
+    if (board.attackMoves.isNotEmpty()) moves = board.attackMoves
 
     val scores = FloatArray(moves.size)
     var maxScoreIndex = 0
@@ -359,37 +358,9 @@ fun getMinimaxMove(
 
     for (move in moves) {
 
-        var prevCellArr : MutableList<Cell> = mutableListOf()
+        val newBoard = performMove(move, board, board.color)  //getting a copy of the board and making the current move in the copy
 
-        for(cell in board.cells){
-            prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
-        }
-
-
-        if (move.cellToAttack != null) {
-            for (cell in prevCellArr) {
-                if (cell.position == move.cellToAttack!!.position) {
-                    cell.color = "NONE"
-                }
-                if (cell.position == move.from.position) {
-                    cell.position = move.to.position
-                    cell.row = move.to.row
-                    cell.column = move.to.column
-                }
-            }
-        } else {
-            for (cell in prevCellArr) {
-                if (cell.position == move.from.position) {
-                    cell.position = move.to.position
-                    cell.row = move.to.row
-                    cell.column = move.to.column
-                }
-            }
-        }
-
-        val moved = Board(prevCellArr.toTypedArray(), board.color) //getting a copy of the board and making the current move in the copy
-
-        scores[i] = getMinimaxScore(moved, depth, true, alpha, beta, color)  //false -- isKingMove
+        scores[i] = getMinimaxScore(newBoard, depth, true, alpha, beta)
 
         if (scores[i] > scores[maxScoreIndex]) maxScoreIndex = i //keeping track of the best move
         alpha = Math.max(alpha, scores[i])
@@ -399,27 +370,22 @@ fun getMinimaxMove(
 }
 
 
-//////
-
-
-
 fun getMinimaxScore(
     board: Board,
     depth: Int,
     maxing: Boolean,
     alpha: Float,
-    beta: Float,
-    color: String
+    beta: Float
 ): Float {
 
     var alpha = alpha
     var beta = beta
-    val moves: List<Move> = board.generateAllMoves(color)
+    val moves: List<Move> = board.generateAllMoves(board.color)
 
     val playerColor = board.color
     val enemyColor = if (playerColor == "RED") "BLACK" else "RED"
 
-    if (depth == 0) return if (maxing) getPlayerScore(board, playerColor) else getPlayerScore(board, enemyColor)
+    if (depth == 0) return if (maxing) getPlayerScore(board, board.color) else getPlayerScore(board, board.color)
 
 
     if (moves.size == 0) //if no moves i.e. no pieces or blocked, then current player loses
@@ -430,80 +396,58 @@ fun getMinimaxScore(
         var best: Float = NEGATIVE_INFINITY
         for (move in moves) {
 
-            //////Here you make move
-            var prevCellArr : MutableList<Cell> = mutableListOf()
+            val newBoard = performMove(move, board, enemyColor)
 
-            for(cell in board.cells){
-                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
-            }
-            if (move.cellToAttack != null) {
-                for (cell in prevCellArr) {
-                    if (cell.position == move.cellToAttack!!.position) {
-                        cell.color = "NONE"
-                    }
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
-                    }
-                }
-            } else {
-                for (cell in prevCellArr) {
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
-                    }
-                }
-            }
-            ////*************
-
-            val score = getMinimaxScore(Board(prevCellArr.toTypedArray(), enemyColor), depth - 1, false, alpha, beta, enemyColor)
+            val score = getMinimaxScore(newBoard,depth - 1,false, alpha, beta)
             best = Math.max(best, score)
             alpha = Math.max(alpha, score)
             if (beta <= alpha) break
         }
         best
-    }
-    else  //minimising
+    } else  //minimising
     {
         var best: Float = POSITIVE_INFINITY
         for (move in moves) {
 
+            val newBoard = performMove(move, board, enemyColor)
 
-            //////Here
-            var prevCellArr : MutableList<Cell> = mutableListOf()
-
-            for(cell in board.cells){
-                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
-            }
-            if (move.cellToAttack != null) {
-                for (cell in prevCellArr) {
-                    if (cell.position == move.cellToAttack!!.position) {
-                        cell.color = "NONE"
-                    }
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
-                    }
-                }
-            } else {
-                for (cell in prevCellArr) {
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
-                    }
-                }
-            }
-            ////*************
-
-            val score = getMinimaxScore(Board(prevCellArr.toTypedArray(), playerColor), depth - 1, true, alpha, beta, playerColor)
+            val score = getMinimaxScore(newBoard, depth - 1, true, alpha, beta)
             best = Math.min(best, score)
             beta = Math.min(beta, score) //update beta with the minimum value
             if (beta <= alpha) break
         }
         best
     }
+}
+
+
+private fun performMove(move: Move, board: Board, color: String): Board {
+
+    var prevCellArr: MutableList<Cell> = mutableListOf()
+    for (cell in board.cells) {
+        prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+    }
+
+    if (move.cellToAttack != null) {
+        for (cell in prevCellArr) {
+            if (cell.position == move.cellToAttack!!.position) {
+                cell.color = "NONE"
+            }
+        }
+    }
+
+    for (cell in prevCellArr) {
+        if (cell.position == move.from.position) {
+            cell.position = move.to.position
+            cell.row = move.to.row
+            cell.column = move.to.column
+
+            if (move.to.row == 0 || move.to.row == 7) {
+                cell.king = true
+            }
+
+        }
+    }
+
+    return Board(prevCellArr.toTypedArray(), color)
 }
