@@ -43,49 +43,7 @@ data class Board(val cells: Array<Cell>, val color: String) {
         }
     }
 
-    private fun isEven(cell: Cell): Boolean {
-        return cell.row % 2 == 0
-    }
 
-    fun getRed(): Int {
-        var counter = 0
-        for (cell in board) {
-            if (cell.color == "RED" && !cell.king) {
-                counter++
-            }
-        }
-        return counter
-    }
-
-    fun getRedKings(): Int {
-        var counter = 0
-        for (cell in board) {
-            if (cell.color == "RED" && cell.king) {
-                counter++
-            }
-        }
-        return counter
-    }
-
-    fun getBlack(): Int {
-        var counter = 0
-        for (cell in board) {
-            if (cell.color == "BLACK" && !cell.king) {
-                counter++
-            }
-        }
-        return counter
-    }
-
-    fun getBlackKings(): Int {
-        var counter = 0
-        for (cell in board) {
-            if (cell.color == "BLACK" && cell.king) {
-                counter++
-            }
-        }
-        return counter
-    }
 
     fun getKings(color: String): Int {
         var counter = 0
@@ -110,29 +68,29 @@ data class Board(val cells: Array<Cell>, val color: String) {
 
     private fun singleMove(cell: Cell, direction: String, enemyColor: String): Move? {
         var pos: Int
-        val killPos: Int
+        val positionToAttack: Int
         val delta = if (direction == "UpLeft" || direction == "DownLeft") -1 else 1
         var i: Int = cell.row + delta
         var j: Int = getUpDown(cell.row, cell.column, direction)
         if (i in 0..7 && j >= 0 && j < 4) {
             pos = getPosition(i, j)
-            if (board[pos - 1].color == enemyColor) {
-                //Move one more
+            var cellToMove = board[pos - 1]
+            if (cellToMove.color == enemyColor) {
                 j = getUpDown(i, j, direction)
                 i += delta
                 if (i in 0..7 && j >= 0 && j < 4) {
-                    killPos = pos
+                    positionToAttack = pos
                     pos = getPosition(i, j)
-                    //todo var dest_cell = board[pos - 1]
-                    //if empty cell -> make move
-                    if (board[pos - 1].color == "NONE") {
-                        val move = Move(cell, board[pos - 1], board[killPos - 1])   //cell to kill
+                    var cellToJump = board[pos - 1]
+
+                    if (cellToJump.color == "NONE") {
+                        val move = Move(cell, cellToJump, board[positionToAttack - 1])   //cell to kill
                         attackMoves.add(move)
                         return move
                     }
                 }
-            } else if (board[pos - 1].color == "NONE") {
-                return Move(cell, board[pos - 1])
+            } else if (cellToMove.color == "NONE") {
+                return Move(cell, cellToMove)
             }
         }
         return null
