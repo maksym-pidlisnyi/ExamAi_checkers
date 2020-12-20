@@ -1,21 +1,22 @@
 import java.util.*
 
 
-data class Board(val cells: Array<Cell>) {
-    private var board: Array<Cell> = Array(4 * 8) { Cell("NONE", 0, 0, false, 0) }
+data class Board(var cells: Array<Cell?>) {
+    private var board: Array<Cell?> = Array(4 * 8) { Cell("NONE", 0, 0, false, 0) }
 
     init {
         for (cell in cells) {
-            board[cell.position - 1] = cell
+            board[cell!!.position - 1] = cell
         }
         var pos: Int
         for (r in 0 until 8) {
             for (c in 0 until 4) {
                 pos = getPosition(r, c)
-                if (board[pos - 1].color == "NONE")
+                if (board[pos - 1]!!.color == "NONE")
                     board[pos - 1] = Cell("NONE", r, c, false, pos)  // for now this way, mb later will change
             }
         }
+        cells = board
     }
 
     private fun getPosition(row: Int, col: Int): Int {
@@ -25,7 +26,7 @@ data class Board(val cells: Array<Cell>) {
     fun generateAllMoves(color: String): ArrayList<Move> {
         val resultList = arrayListOf<Move>()
         for (cell in board) {
-            if (cell.color == color) {
+            if (cell!!.color == color) {
                 resultList.addAll(generateMoves(cell))
             }
         }
@@ -47,7 +48,7 @@ data class Board(val cells: Array<Cell>) {
     fun getRed(): Int {
         var counter = 0
         for (cell in board) {
-            if (cell.color == "RED") {
+            if (cell!!.color == "RED") {
                 counter++
             }
         }
@@ -57,7 +58,7 @@ data class Board(val cells: Array<Cell>) {
     fun getBlack(): Int {
         var counter = 0
         for (cell in board) {
-            if (cell.color == "BLACK") {
+            if (cell!!.color == "BLACK") {
                 counter++
             }
         }
@@ -72,7 +73,7 @@ data class Board(val cells: Array<Cell>) {
         var j: Int = getUpDown(cell.row, cell.column, direction)
         if (i in 0..7 && j >= 0 && j < 4) {
             pos = getPosition(i, j)
-            if (board[pos - 1].color == enemyColor) {
+            if (board[pos - 1]!!.color == enemyColor) {
                 //Move one more
                 j = getUpDown(i, j, direction)
                 i += delta
@@ -81,12 +82,12 @@ data class Board(val cells: Array<Cell>) {
                     pos = getPosition(i, j)
                     //todo var dest_cell = board[pos - 1]
                     //if empty cell -> make move
-                    if (board[pos - 1].color == "NONE") {
-                        return Move(cell, board[pos - 1], board[killPos - 1])   //cell to kill
+                    if (board[pos - 1]!!.color == "NONE") {
+                        return Move(cell, board[pos - 1]!!, board[killPos - 1]!!)   //cell to kill
                     }
                 }
-            } else if (board[pos - 1].color == "NONE") {
-                return Move(cell, board[pos - 1])
+            } else if (board[pos - 1]!!.color == "NONE") {
+                return Move(cell, board[pos - 1]!!)
             }
         }
         return null

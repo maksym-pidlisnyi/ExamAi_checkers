@@ -112,7 +112,7 @@ class CheckersBot(val teamName: String) : Runnable {
 //                val to = moves[0].to
 
 
-                move(move!!.from.position, move.to.position)
+                move(move.from.position, move.to.position)
 
             } else
                 continue

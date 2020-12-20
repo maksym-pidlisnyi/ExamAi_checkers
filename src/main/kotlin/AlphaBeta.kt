@@ -1,41 +1,49 @@
 import java.lang.Float.NEGATIVE_INFINITY
 import java.lang.Float.POSITIVE_INFINITY
+import kotlin.math.max
 
 
 fun getAIMove(
     board: Board,
     depth: Int,
     color: String
-): Move? //picking and returning a move from all possible moves based on the current state of the board
+): Move //picking and returning a move from all possible moves based on the current state of the board
 {
     val moves: List<Move> = board.generateAllMoves(color)
     require(moves.isNotEmpty())
     val scores = FloatArray(moves.size)
     var maxScoreIndex = 0
-    var i = 0
     var alpha: Float = NEGATIVE_INFINITY //alpha keeps track of max score
     val beta: Float = POSITIVE_INFINITY //beta keeps track of mini score
 
-    for (move in moves) {
+    for ((i, move) in moves.withIndex()) {
 
-        var prevCellArr = board.cells
+        val prevCellArr = board.cells.copyOf(32)
         if (move.cellToAttack != null) {
             for (cell in prevCellArr) {
-                if (cell.position == move.cellToAttack!!.position) {
+                if (cell!!.position == move.cellToAttack!!.position) {
                     cell.color = "NONE"
                 }
                 if (cell.position == move.from.position) {
-                    cell.position = move.to.position
-                    cell.row = move.to.row
-                    cell.column = move.to.column
+//                    cell.position = move.to.position
+//                    cell.row = move.to.row
+//                    cell.column = move.to.column
+                    prevCellArr[getIndex(move.from.row, move.from.column)] =
+                        Cell("NONE", move.from.row, move.from.column, move.from.king, move.from.position)
+                    prevCellArr[getIndex(move.to.row, move.to.column)] =
+                        Cell(color, move.to.row, move.to.column, move.to.king, move.to.position)
                 }
             }
         } else {
-            for (cell in prevCellArr) {
-                if (cell.position == move.from.position) {
-                    cell.position = move.to.position
-                    cell.row = move.to.row
-                    cell.column = move.to.column
+            for ((index, cell) in prevCellArr.withIndex()) {
+                if (cell!!.position == move.from.position) {
+//                    cell.position = move.to.position
+//                    cell.row = move.to.row
+//                    cell.column = move.to.column
+                    prevCellArr[getIndex(move.from.row, move.from.column)] =
+                        Cell("NONE", move.from.row, move.from.column, move.from.king, move.from.position)
+                    prevCellArr[getIndex(move.to.row, move.to.column)] =
+                        Cell(color, move.to.row, move.to.column, move.to.king, move.to.position)
                 }
             }
         }
@@ -45,8 +53,7 @@ fun getAIMove(
         scores[i] = getScore(moved, depth, true, alpha, beta, color)  //false -- isKingMove
 
         if (scores[i] > scores[maxScoreIndex]) maxScoreIndex = i //keeping track of the best move
-        alpha = Math.max(alpha, scores[i])
-        i++
+        alpha = max(alpha, scores[i])
     }
     return moves[maxScoreIndex]
 }
@@ -69,7 +76,7 @@ fun getScore(
 
     //if (color == "RED") depth++
 
-    if (moves.size == 0) //if no moves i.e. no pieces or blocked, then current player loses
+    if (moves.isEmpty()) //if no moves i.e. no pieces or blocked, then current player loses
         return if (maxing) NEGATIVE_INFINITY else POSITIVE_INFINITY
 
     return if (maxing) //maximising
@@ -78,24 +85,34 @@ fun getScore(
         for (move in moves) {
 
             //////Here you make move
-            var prevCellArr = board.cells
+            val prevCellArr = board.cells.copyOf(32)
             if (move.cellToAttack != null) {
                 for (cell in prevCellArr) {
-                    if (cell.position == move.cellToAttack!!.position) {
+                    if (cell!!.position == move.cellToAttack!!.position) {
                         cell.color = "NONE"
                     }
                     if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+                        prevCellArr[getIndex(move.from.row, move.from.column)] =
+                            Cell("NONE", move.from.row, move.from.column, move.from.king, move.from.position)
+                        prevCellArr[getIndex(move.to.row, move.to.column)] =
+                            Cell(color, move.to.row, move.to.column, move.to.king, move.to.position)
+
                     }
                 }
             } else {
                 for (cell in prevCellArr) {
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
+                    if (cell!!.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+                        prevCellArr[getIndex(move.from.row, move.from.column)] =
+                            Cell("NONE", move.from.row, move.from.column, move.from.king, move.from.position)
+                        prevCellArr[getIndex(move.to.row, move.to.column)] =
+                            Cell(color, move.to.row, move.to.column, move.to.king, move.to.position)
+
                     }
                 }
             }
@@ -115,24 +132,32 @@ fun getScore(
 
 
             //////Here
-            var prevCellArr = board.cells
+            val prevCellArr = board.cells.copyOf(32)
             if (move.cellToAttack != null) {
                 for (cell in prevCellArr) {
-                    if (cell.position == move.cellToAttack!!.position) {
+                    if (cell!!.position == move.cellToAttack!!.position) {
                         cell.color = "NONE"
                     }
                     if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+                        prevCellArr[getIndex(move.from.row, move.from.column)] =
+                            Cell("NONE", move.from.row, move.from.column, move.from.king, move.from.position)
+                        prevCellArr[getIndex(move.to.row, move.to.column)] =
+                            Cell(color, move.to.row, move.to.column, move.to.king, move.to.position)
                     }
                 }
             } else {
                 for (cell in prevCellArr) {
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
+                    if (cell!!.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+                        prevCellArr[getIndex(move.from.row, move.from.column)] =
+                            Cell("NONE", move.from.row, move.from.column, move.from.king, move.from.position)
+                        prevCellArr[getIndex(move.to.row, move.to.column)] =
+                            Cell(color, move.to.row, move.to.column, move.to.king, move.to.position)
                     }
                 }
             }
@@ -149,9 +174,13 @@ fun getScore(
 
 
 fun getPlayerScore(board: Board, color: String): Float {
-    if (color == "RED") {
-        return board.getRed().toFloat() / (board.getRed() + board.getBlack()).toFloat()
+    return if (color == "RED") {
+        board.getRed().toFloat() / (board.getRed() + board.getBlack()).toFloat()
     } else {
-        return board.getBlack().toFloat() / (board.getRed() + board.getBlack()).toFloat()
+        board.getBlack().toFloat() / (board.getRed() + board.getBlack()).toFloat()
     }
+}
+
+private fun getIndex(row: Int, col: Int): Int {
+    return row * 4 + col
 }
