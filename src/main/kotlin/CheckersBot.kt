@@ -5,20 +5,17 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.TimeUnit
 
-class CheckersBot(val teamName: String) : Runnable {
+class CheckersBot(private val teamName: String) {
 
     private val TEAM_NAME = this.teamName
     private lateinit var game: Game
     private lateinit var player: Player
     private val client = OkHttpClient.Builder()
-        .connectTimeout(15000, TimeUnit.MILLISECONDS)          // TODO maybe change timeout
-        .writeTimeout(60000, TimeUnit.MILLISECONDS)            // TODO or set to default
+        .connectTimeout(15000, TimeUnit.MILLISECONDS)
+        .writeTimeout(60000, TimeUnit.MILLISECONDS)
         .readTimeout(60000, TimeUnit.MILLISECONDS)
         .build()
     private val gson = Gson()
-
-
-    // TODO add try catch for safety
 
     // gets game info
     private fun getinfo() : Game {
@@ -64,7 +61,6 @@ class CheckersBot(val teamName: String) : Runnable {
             println("Connected to the game - $teamName - ${player.color}")
             return player
         }
-
     }
 
     // makes move
@@ -90,8 +86,6 @@ class CheckersBot(val teamName: String) : Runnable {
         }
     }
 
-
-
     fun startBattle() {
         connect()
         getinfo()
@@ -99,40 +93,27 @@ class CheckersBot(val teamName: String) : Runnable {
 
         while (game.is_started && !game.is_finished) {
             getinfo()
-            //moved board from here
-
             if (game.whose_turn == player.color) {
-
                 board = Board(game.board, player.color)
-
-                //val move =   if (player.color == "RED") getAIMoveRed(board, 4, game.whose_turn) else getAIMoveBlack(board, 6, game.whose_turn)
                 val move : Move?
-                if(game.last_move != null && game.last_move!!.player == player.color) {
-                    var cellToFind : Cell? = null
-                    for(cell in board.cells){
-                        if(cell.position == game.last_move!!.getLastMoveTo()) {
+                if (game.last_move != null && game.last_move?.player == player.color) {
+                    var cellToFind: Cell? = null
+                    for (cell in board.cells) {
+                        if (cell.position == game.last_move?.getLastMoveTo()) {
                             cellToFind = cell
                             break
                         }
                     }
-                    move = getMinimaxMove(board, 4, cellToFind)
+                    move = getMinimaxMove(board, 6, cellToFind)
                 } else {
-                    move = getMinimaxMove(board, 4, null)
+                    move = getMinimaxMove(board, 6, null)
                 }
-
                 if (move != null) {
                     move(move.from.position, move.to.position)
                 }
-
-
             } else
                 continue
         }
     }
-
-    override fun run() {
-        startBattle()
-    }
-
 
 }

@@ -5,8 +5,6 @@ data class Board(val cells: Array<Cell>, val color: String) {
     var board: Array<Cell> = Array(4 * 8) { Cell("NONE", 0, 0, false, 0) }
     var attackMoves: MutableList<Move> = mutableListOf()
 
-
-
     init {
         for (cell in cells) {
             board[cell.position - 1] = cell
@@ -16,7 +14,7 @@ data class Board(val cells: Array<Cell>, val color: String) {
             for (c in 0 until 4) {
                 pos = getPosition(r, c)
                 if (board[pos - 1].color == "NONE")
-                    board[pos - 1] = Cell("NONE", r, c, false, pos)  // for now this way, mb later will change
+                    board[pos - 1] = Cell("NONE", r, c, false, pos)
             }
         }
     }
@@ -43,8 +41,6 @@ data class Board(val cells: Array<Cell>, val color: String) {
         }
     }
 
-
-
     fun getKings(color: String): Int {
         var counter = 0
         for (cell in board) {
@@ -65,7 +61,6 @@ data class Board(val cells: Array<Cell>, val color: String) {
         return counter
     }
 
-
     private fun singleMove(cell: Cell, direction: String, enemyColor: String): Move? {
         var pos: Int
         val positionToAttack: Int
@@ -74,17 +69,16 @@ data class Board(val cells: Array<Cell>, val color: String) {
         var j: Int = getUpDown(cell.row, cell.column, direction)
         if (i in 0..7 && j >= 0 && j < 4) {
             pos = getPosition(i, j)
-            var cellToMove = board[pos - 1]
+            val cellToMove = board[pos - 1]
             if (cellToMove.color == enemyColor) {
                 j = getUpDown(i, j, direction)
                 i += delta
                 if (i in 0..7 && j >= 0 && j < 4) {
                     positionToAttack = pos
                     pos = getPosition(i, j)
-                    var cellToJump = board[pos - 1]
-
+                    val cellToJump = board[pos - 1]
                     if (cellToJump.color == "NONE") {
-                        val move = Move(cell, cellToJump, board[positionToAttack - 1])   //cell to kill
+                        val move = Move(cell, cellToJump, board[positionToAttack - 1])
                         attackMoves.add(move)
                         return move
                     }
@@ -95,7 +89,6 @@ data class Board(val cells: Array<Cell>, val color: String) {
         }
         return null
     }
-
 
     fun generateMoves(cell: Cell): ArrayList<Move> {
         val moves = ArrayList<Move>()
@@ -133,6 +126,5 @@ data class Board(val cells: Array<Cell>, val color: String) {
         }
         return moves
     }
-
 
 }
