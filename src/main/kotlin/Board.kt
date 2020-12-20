@@ -44,7 +44,7 @@ data class Board(val cells: Array<Cell>) {
         return cell.row % 2 == 0
     }
 
-    private fun getRed(): Int {
+    fun getRed(): Int {
         var counter = 0
         for (cell in board) {
             if (cell.color == "RED") {
@@ -54,7 +54,7 @@ data class Board(val cells: Array<Cell>) {
         return counter
     }
 
-    private fun getBlack(): Int {
+    fun getBlack(): Int {
         var counter = 0
         for (cell in board) {
             if (cell.color == "BLACK") {
@@ -79,21 +79,21 @@ data class Board(val cells: Array<Cell>) {
                 if (i in 0..7 && j >= 0 && j < 4) {
                     killPos = pos
                     pos = getPosition(i, j)
-
-                    //if empty make move
+                    //todo var dest_cell = board[pos - 1]
+                    //if empty cell -> make move
                     if (board[pos - 1].color == "NONE") {
-                        return Move(cell.position, pos)
+                        return Move(cell, board[pos - 1], board[killPos - 1])   //cell to kill
                     }
                 }
             } else if (board[pos - 1].color == "NONE") {
-                return Move(cell.position, pos)
+                return Move(cell, board[pos - 1])
             }
         }
         return null
     }
 
 
-    private fun generateMoves(cell: Cell): ArrayList<Move> {
+    fun generateMoves(cell: Cell): ArrayList<Move> {
         val moves = ArrayList<Move>()
         val enemyColor = if (cell.color == "RED") "BLACK" else "RED"
         if (cell.color == "RED") {

@@ -47,7 +47,7 @@ fun main(args: Array<String>) {
 */
 
     val firstBot = Thread(CheckersBot("Player1"))
-    val secondBot = Thread(CheckersBot("Player2"))
+    //val secondBot = Thread(CheckersBot("Player2"))
     firstBot.start()
-    secondBot.start()
+   // secondBot.start()
 }

@@ -101,16 +101,18 @@ class CheckersBot(val teamName: String) : Runnable {
             board = Board(game.board)
             if (game.whose_turn == player.color) {
                 // TODO() minimax move
+                  val move = getAIMove(board, 3, game.whose_turn)
+//                val moves = board.generateAllMoves(game.whose_turn)
+//                println("Available moves: ")
+//                for (i in moves.indices) {
+//                    print(moves[i])
+//                    print(", ")
+//                }
+//                val from = moves[0].from
+//                val to = moves[0].to
 
-                val moves = board.generateAllMoves(game.whose_turn)
-                println("Available moves: ")
-                for (i in moves.indices) {
-                    print(moves[i])
-                    print(", ")
-                }
-                val from = moves[0].from
-                val to = moves[0].to
-                move(from, to)
+
+                move(move!!.from.position, move.to.position)
 
             } else
                 continue
