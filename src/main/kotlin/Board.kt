@@ -1,7 +1,7 @@
 import java.util.*
 
 
-data class Board(val cells: Array<Cell>) {
+data class Board(val cells: Array<Cell>, val color: String) {
     private var board: Array<Cell> = Array(4 * 8) { Cell("NONE", 0, 0, false, 0) }
     var attackMoves: MutableList<Move> = mutableListOf()
 
@@ -84,6 +84,27 @@ data class Board(val cells: Array<Cell>) {
         }
         return counter
     }
+
+    fun getKings(color: String): Int {
+        var counter = 0
+        for (cell in board) {
+            if (cell.color == color && cell.king) {
+                counter++
+            }
+        }
+        return counter
+    }
+
+    fun getNonKings(color: String): Int {
+        var counter = 0
+        for (cell in board) {
+            if (cell.color == color && !cell.king) {
+                counter++
+            }
+        }
+        return counter
+    }
+
 
     private fun singleMove(cell: Cell, direction: String, enemyColor: String): Move? {
         var pos: Int

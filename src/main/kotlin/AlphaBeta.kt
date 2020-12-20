@@ -1,168 +1,168 @@
 import java.lang.Float.NEGATIVE_INFINITY
 import java.lang.Float.POSITIVE_INFINITY
 
-
-fun getAIMove(
-    board: Board,
-    depth: Int,
-    color: String
-): Move? //picking and returning a move from all possible moves based on the current state of the board
-{
-    var moves: List<Move> = board.generateAllMoves(color)
-    require(moves.isNotEmpty())
-
-    if(board.attackMoves.isNotEmpty()) moves = board.attackMoves
-
-    val scores = FloatArray(moves.size)
-    var maxScoreIndex = 0
-    var i = 0
-    var alpha: Float = NEGATIVE_INFINITY //alpha keeps track of max score
-    val beta: Float = POSITIVE_INFINITY //beta keeps track of mini score
-
-    for (move in moves) {
-
-        var prevCellArr : MutableList<Cell> = mutableListOf()
-
-        for(cell in board.cells){
-            prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
-        }
-
-
-        if (move.cellToAttack != null) {
-            for (cell in prevCellArr) {
-                if (cell.position == move.cellToAttack!!.position) {
-                    cell.color = "NONE"
-                }
-                if (cell.position == move.from.position) {
-                    cell.position = move.to.position
-                    cell.row = move.to.row
-                    cell.column = move.to.column
-                }
-            }
-        } else {
-            for (cell in prevCellArr) {
-                if (cell.position == move.from.position) {
-                    cell.position = move.to.position
-                    cell.row = move.to.row
-                    cell.column = move.to.column
-                }
-            }
-        }
-
-        val moved = Board(prevCellArr.toTypedArray()) //getting a copy of the board and making the current move in the copy
-
-        scores[i] = getScore(moved, depth, true, alpha, beta, color)  //false -- isKingMove
-
-        if (scores[i] > scores[maxScoreIndex]) maxScoreIndex = i //keeping track of the best move
-        alpha = Math.max(alpha, scores[i])
-        i++
-    }
-    return moves[maxScoreIndex]
-}
-
-
-fun getScore(
-    board: Board,
-    depth: Int,
-    maxing: Boolean,
-    alpha: Float,
-    beta: Float,
-    color: String
-): Float {
-    //var depth = depth
-    var alpha = alpha
-    var beta = beta
-    val moves: List<Move> = board.generateAllMoves(color)
-
-    if (depth == 0) return if (maxing) getPlayerScore(board, "RED") else getPlayerScore(board, "BLACK")
-
-    //if (color == "RED") depth++
-
-    if (moves.size == 0) //if no moves i.e. no pieces or blocked, then current player loses
-        return if (maxing) NEGATIVE_INFINITY else POSITIVE_INFINITY
-
-    return if (maxing) //maximising
-    {
-        var best: Float = NEGATIVE_INFINITY
-        for (move in moves) {
-
-            //////Here you make move
-            var prevCellArr : MutableList<Cell> = mutableListOf()
-
-            for(cell in board.cells){
-                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
-            }
-            if (move.cellToAttack != null) {
-                for (cell in prevCellArr) {
-                    if (cell.position == move.cellToAttack!!.position) {
-                        cell.color = "NONE"
-                    }
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
-                    }
-                }
-            } else {
-                for (cell in prevCellArr) {
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
-                    }
-                }
-            }
-            ////*************
-
-            val score = getScore(Board(prevCellArr.toTypedArray()), depth - 1, false, alpha, beta, "BLACK")     //isKingMode
-            best = Math.max(best, score)
-            alpha = Math.max(alpha, score) //update alpha with maximum value
-            if (beta <= alpha) break
-        }
-        best
-    }
-            else  //minimising
-    {
-        var best: Float = POSITIVE_INFINITY
-        for (move in moves) {
-
-
-            //////Here
-            var prevCellArr : MutableList<Cell> = mutableListOf()
-
-            for(cell in board.cells){
-                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
-            }
-            if (move.cellToAttack != null) {
-                for (cell in prevCellArr) {
-                    if (cell.position == move.cellToAttack!!.position) {
-                        cell.color = "NONE"
-                    }
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
-                    }
-                }
-            } else {
-                for (cell in prevCellArr) {
-                    if (cell.position == move.from.position) {
-                        cell.position = move.to.position
-                        cell.row = move.to.row
-                        cell.column = move.to.column
-                    }
-                }
-            }
-            ////*************
-
-            val score = getScore(Board(prevCellArr.toTypedArray()), depth - 1, true, alpha, beta, "RED")
-            best = Math.min(best, score)
-            beta = Math.min(beta, score) //update beta with the minimum value
-            if (beta <= alpha) break
-        }
-        best
-    }
-}
+//
+//fun getAIMoveRed(
+//    board: Board,
+//    depth: Int,
+//    color: String
+//): Move? //picking and returning a move from all possible moves based on the current state of the board
+//{
+//    var moves: List<Move> = board.generateAllMoves(color)
+//    require(moves.isNotEmpty())
+//
+//    if(board.attackMoves.isNotEmpty()) moves = board.attackMoves
+//
+//    val scores = FloatArray(moves.size)
+//    var maxScoreIndex = 0
+//    var i = 0
+//    var alpha: Float = NEGATIVE_INFINITY //alpha keeps track of max score
+//    val beta: Float = POSITIVE_INFINITY //beta keeps track of mini score
+//
+//    for (move in moves) {
+//
+//        var prevCellArr : MutableList<Cell> = mutableListOf()
+//
+//        for(cell in board.cells){
+//            prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+//        }
+//
+//
+//        if (move.cellToAttack != null) {
+//            for (cell in prevCellArr) {
+//                if (cell.position == move.cellToAttack!!.position) {
+//                    cell.color = "NONE"
+//                }
+//                if (cell.position == move.from.position) {
+//                    cell.position = move.to.position
+//                    cell.row = move.to.row
+//                    cell.column = move.to.column
+//                }
+//            }
+//        } else {
+//            for (cell in prevCellArr) {
+//                if (cell.position == move.from.position) {
+//                    cell.position = move.to.position
+//                    cell.row = move.to.row
+//                    cell.column = move.to.column
+//                }
+//            }
+//        }
+//
+//        val moved = Board(prevCellArr.toTypedArray(), board.color) //getting a copy of the board and making the current move in the copy
+//
+//        scores[i] = getScoreRed(moved, depth, true, alpha, beta, color)  //false -- isKingMove
+//
+//        if (scores[i] > scores[maxScoreIndex]) maxScoreIndex = i //keeping track of the best move
+//        alpha = Math.max(alpha, scores[i])
+//        i++
+//    }
+//    return moves[maxScoreIndex]
+//}
+//
+//
+//fun getScoreRed(
+//    board: Board,
+//    depth: Int,
+//    maxing: Boolean,
+//    alpha: Float,
+//    beta: Float,
+//    color: String
+//): Float {
+//    //var depth = depth
+//    var alpha = alpha
+//    var beta = beta
+//    val moves: List<Move> = board.generateAllMoves(color)
+//
+//    if (depth == 0) return if (maxing) getPlayerScore(board, "RED") else getPlayerScore(board, "BLACK")
+//
+//    //if (color == "RED") depth++
+//
+//    if (moves.size == 0) //if no moves i.e. no pieces or blocked, then current player loses
+//        return if (maxing) NEGATIVE_INFINITY else POSITIVE_INFINITY
+//
+//    return if (maxing) //maximising
+//    {
+//        var best: Float = NEGATIVE_INFINITY
+//        for (move in moves) {
+//
+//            //////Here you make move
+//            var prevCellArr : MutableList<Cell> = mutableListOf()
+//
+//            for(cell in board.cells){
+//                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+//            }
+//            if (move.cellToAttack != null) {
+//                for (cell in prevCellArr) {
+//                    if (cell.position == move.cellToAttack!!.position) {
+//                        cell.color = "NONE"
+//                    }
+//                    if (cell.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+//                    }
+//                }
+//            } else {
+//                for (cell in prevCellArr) {
+//                    if (cell.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+//                    }
+//                }
+//            }
+//            ////*************
+//
+//            val score = getScoreRed(Board(prevCellArr.toTypedArray(), board.color), depth - 1, false, alpha, beta, "BLACK")     //isKingMode
+//            best = Math.max(best, score)
+//            alpha = Math.max(alpha, score) //update alpha with maximum value
+//            if (beta <= alpha) break
+//        }
+//        best
+//    }
+//            else  //minimising
+//    {
+//        var best: Float = POSITIVE_INFINITY
+//        for (move in moves) {
+//
+//
+//            //////Here
+//            var prevCellArr : MutableList<Cell> = mutableListOf()
+//
+//            for(cell in board.cells){
+//                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+//            }
+//            if (move.cellToAttack != null) {
+//                for (cell in prevCellArr) {
+//                    if (cell.position == move.cellToAttack!!.position) {
+//                        cell.color = "NONE"
+//                    }
+//                    if (cell.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+//                    }
+//                }
+//            } else {
+//                for (cell in prevCellArr) {
+//                    if (cell.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+//                    }
+//                }
+//            }
+//            ////*************
+//
+//            val score = getScoreRed(Board(prevCellArr.toTypedArray(), board.color), depth - 1, true, alpha, beta, "RED")
+//            best = Math.min(best, score)
+//            beta = Math.min(beta, score) //update beta with the minimum value
+//            if (beta <= alpha) break
+//        }
+//        best
+//    }
+//}
 
 
 fun getPlayerScore(board: Board, color: String): Float {
@@ -173,8 +173,174 @@ fun getPlayerScore(board: Board, color: String): Float {
     }
 }
 
+//
+//fun getAIMoveBlack(
+//    board: Board,
+//    depth: Int,
+//    color: String
+//): Move? //picking and returning a move from all possible moves based on the current state of the board
+//{
+//    var moves: List<Move> = board.generateAllMoves(color)
+//    require(moves.isNotEmpty())
+//
+//    if(board.attackMoves.isNotEmpty()) moves = board.attackMoves
+//
+//    val scores = FloatArray(moves.size)
+//    var maxScoreIndex = 0
+//    var i = 0
+//    var alpha: Float = NEGATIVE_INFINITY //alpha keeps track of max score
+//    val beta: Float = POSITIVE_INFINITY //beta keeps track of mini score
+//
+//    for (move in moves) {
+//
+//        var prevCellArr : MutableList<Cell> = mutableListOf()
+//
+//        for(cell in board.cells){
+//            prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+//        }
+//
+//
+//        if (move.cellToAttack != null) {
+//            for (cell in prevCellArr) {
+//                if (cell.position == move.cellToAttack!!.position) {
+//                    cell.color = "NONE"
+//                }
+//                if (cell.position == move.from.position) {
+//                    cell.position = move.to.position
+//                    cell.row = move.to.row
+//                    cell.column = move.to.column
+//                }
+//            }
+//        } else {
+//            for (cell in prevCellArr) {
+//                if (cell.position == move.from.position) {
+//                    cell.position = move.to.position
+//                    cell.row = move.to.row
+//                    cell.column = move.to.column
+//                }
+//            }
+//        }
+//
+//        val moved = Board(prevCellArr.toTypedArray(), board.color) //getting a copy of the board and making the current move in the copy
+//
+//        scores[i] = getScoreBlack(moved, depth, true, alpha, beta, color)  //false -- isKingMove
+//
+//        if (scores[i] > scores[maxScoreIndex]) maxScoreIndex = i //keeping track of the best move
+//        alpha = Math.max(alpha, scores[i])
+//        i++
+//    }
+//    return moves[maxScoreIndex]
+//}
+//
+//
+//
+//
+//fun getScoreBlack(
+//    board: Board,
+//    depth: Int,
+//    maxing: Boolean,
+//    alpha: Float,
+//    beta: Float,
+//    color: String
+//): Float {
+//    //var depth = depth
+//    var alpha = alpha
+//    var beta = beta
+//    val moves: List<Move> = board.generateAllMoves(color)
+//
+//    if (depth == 0) return if (maxing) getPlayerScore(board, "BLACK") else getPlayerScore(board, "RED")
+//
+//    //if (color == "RED") depth++
+//
+//    if (moves.size == 0) //if no moves i.e. no pieces or blocked, then current player loses
+//        return if (maxing) NEGATIVE_INFINITY else POSITIVE_INFINITY
+//
+//    return if (maxing) //maximising
+//    {
+//        var best: Float = NEGATIVE_INFINITY
+//        for (move in moves) {
+//
+//            //////Here you make move
+//            var prevCellArr : MutableList<Cell> = mutableListOf()
+//
+//            for(cell in board.cells){
+//                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+//            }
+//            if (move.cellToAttack != null) {
+//                for (cell in prevCellArr) {
+//                    if (cell.position == move.cellToAttack!!.position) {
+//                        cell.color = "NONE"
+//                    }
+//                    if (cell.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+//                    }
+//                }
+//            } else {
+//                for (cell in prevCellArr) {
+//                    if (cell.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+//                    }
+//                }
+//            }
+//            ////*************
+//
+//            val score = getScoreBlack(Board(prevCellArr.toTypedArray(), board.color), depth - 1, false, alpha, beta, "RED")     //isKingMode
+//            best = Math.max(best, score)
+//            alpha = Math.max(alpha, score) //update alpha with maximum value
+//            if (beta <= alpha) break
+//        }
+//        best
+//    }
+//    else  //minimising
+//    {
+//        var best: Float = POSITIVE_INFINITY
+//        for (move in moves) {
+//
+//
+//            //////Here
+//            var prevCellArr : MutableList<Cell> = mutableListOf()
+//
+//            for(cell in board.cells){
+//                prevCellArr.add(Cell(cell.color, cell.row, cell.column, cell.king, cell.position))
+//            }
+//            if (move.cellToAttack != null) {
+//                for (cell in prevCellArr) {
+//                    if (cell.position == move.cellToAttack!!.position) {
+//                        cell.color = "NONE"
+//                    }
+//                    if (cell.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+//                    }
+//                }
+//            } else {
+//                for (cell in prevCellArr) {
+//                    if (cell.position == move.from.position) {
+//                        cell.position = move.to.position
+//                        cell.row = move.to.row
+//                        cell.column = move.to.column
+//                    }
+//                }
+//            }
+//            ////*************
+//
+//            val score = getScoreBlack(Board(prevCellArr.toTypedArray(), board.color), depth - 1, true, alpha, beta, "BLACK")
+//            best = Math.min(best, score)
+//            beta = Math.min(beta, score) //update beta with the minimum value
+//            if (beta <= alpha) break
+//        }
+//        best
+//    }
+//}
 
-fun getAIMoveBlack(
+/////////////////////////////////////////////
+
+fun getMinimaxMove(
     board: Board,
     depth: Int,
     color: String
@@ -221,9 +387,9 @@ fun getAIMoveBlack(
             }
         }
 
-        val moved = Board(prevCellArr.toTypedArray()) //getting a copy of the board and making the current move in the copy
+        val moved = Board(prevCellArr.toTypedArray(), board.color) //getting a copy of the board and making the current move in the copy
 
-        scores[i] = getScoreBlack(moved, depth, true, alpha, beta, color)  //false -- isKingMove
+        scores[i] = getMinimaxScore(moved, depth, true, alpha, beta, color)  //false -- isKingMove
 
         if (scores[i] > scores[maxScoreIndex]) maxScoreIndex = i //keeping track of the best move
         alpha = Math.max(alpha, scores[i])
@@ -233,9 +399,11 @@ fun getAIMoveBlack(
 }
 
 
+//////
 
 
-fun getScoreBlack(
+
+fun getMinimaxScore(
     board: Board,
     depth: Int,
     maxing: Boolean,
@@ -243,14 +411,16 @@ fun getScoreBlack(
     beta: Float,
     color: String
 ): Float {
-    //var depth = depth
+
     var alpha = alpha
     var beta = beta
     val moves: List<Move> = board.generateAllMoves(color)
 
-    if (depth == 0) return if (maxing) getPlayerScore(board, "BLACK") else getPlayerScore(board, "RED")
+    val playerColor = board.color
+    val enemyColor = if (playerColor == "RED") "BLACK" else "RED"
 
-    //if (color == "RED") depth++
+    if (depth == 0) return if (maxing) getPlayerScore(board, playerColor) else getPlayerScore(board, enemyColor)
+
 
     if (moves.size == 0) //if no moves i.e. no pieces or blocked, then current player loses
         return if (maxing) NEGATIVE_INFINITY else POSITIVE_INFINITY
@@ -288,9 +458,9 @@ fun getScoreBlack(
             }
             ////*************
 
-            val score = getScoreBlack(Board(prevCellArr.toTypedArray()), depth - 1, false, alpha, beta, "RED")     //isKingMode
+            val score = getMinimaxScore(Board(prevCellArr.toTypedArray(), enemyColor), depth - 1, false, alpha, beta, enemyColor)
             best = Math.max(best, score)
-            alpha = Math.max(alpha, score) //update alpha with maximum value
+            alpha = Math.max(alpha, score)
             if (beta <= alpha) break
         }
         best
@@ -329,7 +499,7 @@ fun getScoreBlack(
             }
             ////*************
 
-            val score = getScoreBlack(Board(prevCellArr.toTypedArray()), depth - 1, true, alpha, beta, "BLACK")
+            val score = getMinimaxScore(Board(prevCellArr.toTypedArray(), playerColor), depth - 1, true, alpha, beta, playerColor)
             best = Math.min(best, score)
             beta = Math.min(beta, score) //update beta with the minimum value
             if (beta <= alpha) break
@@ -337,5 +507,3 @@ fun getScoreBlack(
         best
     }
 }
-
-

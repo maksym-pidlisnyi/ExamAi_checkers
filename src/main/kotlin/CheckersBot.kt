@@ -94,23 +94,17 @@ class CheckersBot(val teamName: String) : Runnable {
     fun startBattle() {
         connect()
         getinfo()
-        var board = Board(game.board)
+        var board : Board
 
         while (game.is_started && !game.is_finished) {
             getinfo()
-            board = Board(game.board)
+            //moved board from here
             if (game.whose_turn == player.color) {
+                board = Board(game.board, player.color)
                 // TODO() minimax move
-                  val move =   if (player.color == "RED") getAIMove(board, 4, game.whose_turn) else getAIMoveBlack(board, 4, game.whose_turn)
-//                val moves = board.generateAllMoves(game.whose_turn)
-//                println("Available moves: ")
-//                for (i in moves.indices) {
-//                    print(moves[i])
-//                    print(", ")
-//                }
-//                val from = moves[0].from
-//                val to = moves[0].to
 
+                  //val move =   if (player.color == "RED") getAIMoveRed(board, 4, game.whose_turn) else getAIMoveBlack(board, 6, game.whose_turn)
+                    val move = getMinimaxMove(board, 6, game.whose_turn)
 
                 move(move!!.from.position, move.to.position)
 
