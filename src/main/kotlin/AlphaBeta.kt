@@ -342,10 +342,11 @@ fun getPlayerScore(board: Board, color: String): Float {
 
 fun getMinimaxMove(
     board: Board,
-    depth: Int
+    depth: Int,
+    singleCell: Cell?
 ): Move? //picking and returning a move from all possible moves based on the current state of the board
 {
-    var moves: List<Move> = board.generateAllMoves(board.color)
+    var moves: List<Move> = if(singleCell != null) board.generateMoves(singleCell) else board.generateAllMoves(board.color)
     require(moves.isNotEmpty())
 
     if (board.attackMoves.isNotEmpty()) moves = board.attackMoves
@@ -368,6 +369,7 @@ fun getMinimaxMove(
     }
     return moves[maxScoreIndex]
 }
+
 
 
 fun getMinimaxScore(
@@ -451,3 +453,5 @@ private fun performMove(move: Move, board: Board, color: String): Board {
 
     return Board(prevCellArr.toTypedArray(), color)
 }
+
+
