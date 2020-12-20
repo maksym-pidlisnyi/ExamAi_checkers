@@ -2,8 +2,10 @@ import java.util.*
 
 
 data class Board(val cells: Array<Cell>, val color: String) {
-    private var board: Array<Cell> = Array(4 * 8) { Cell("NONE", 0, 0, false, 0) }
+    var board: Array<Cell> = Array(4 * 8) { Cell("NONE", 0, 0, false, 0) }
     var attackMoves: MutableList<Move> = mutableListOf()
+
+
 
     init {
         for (cell in cells) {
@@ -19,7 +21,7 @@ data class Board(val cells: Array<Cell>, val color: String) {
         }
     }
 
-    private fun getPosition(row: Int, col: Int): Int {
+    fun getPosition(row: Int, col: Int): Int {
         return row * 4 + col + 1
     }
 
@@ -33,7 +35,7 @@ data class Board(val cells: Array<Cell>, val color: String) {
         return resultList
     }
 
-    private fun getUpDown(i: Int, j: Int, direction: String): Int {
+    fun getUpDown(i: Int, j: Int, direction: String): Int {
         return if (direction.startsWith("Up")) {
             if (i % 2 == 0) j else j - 1
         } else {

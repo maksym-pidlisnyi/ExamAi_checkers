@@ -1,5 +1,6 @@
-import java.lang.Float.NEGATIVE_INFINITY
-import java.lang.Float.POSITIVE_INFINITY
+import java.lang.Double.NEGATIVE_INFINITY
+import java.lang.Double.POSITIVE_INFINITY
+
 
 //
 //fun getAIMoveRed(
@@ -165,13 +166,90 @@ import java.lang.Float.POSITIVE_INFINITY
 //}
 
 
-fun getPlayerScore(board: Board, color: String): Float {
-    return if (color == "RED") {
-        board.getRed().toFloat() + board.getRedKings() * 2 - board.getBlack().toFloat() + board.getBlackKings() * 2
-    } else {
-        board.getBlack().toFloat() + board.getBlackKings() * 2 - board.getRed().toFloat() + board.getRedKings() * 2
-    }
+fun getPlayerScore(board: Board, color: String): Double {
+    val enemyColor = if (color == "RED") "BLACK" else "RED"
+
+    return getPlayerScoreAdvanced(board, color) - getPlayerScoreAdvanced(board, enemyColor)
+
 }
+
+//https://github.com/kevingregor/Checkers
+// Index 0: Number of pawns
+// Index 1: Number of kings
+// Index 2: Number in back row
+// Index 3: Number in middle box
+// Index 4: Number in middle 2 rows, not box
+// Index 5: Number that can be taken this turn
+
+
+fun getPlayerScoreAdvanced(board: Board, color: String): Double {
+    val weights = doubleArrayOf(4.0, 8.0, 1.0, 2.0, 1.5, -3.0)
+    val enemyColor = if (color == "RED") "BLACK" else "RED"
+
+    var scores = mutableListOf<Int>(0, 0, 0, 0, 0, 0)
+    scores[0] = board.getNonKings(color)
+    scores[1] = board.getKings(color)
+
+    for(cell in board.cells) {
+        if(cell.color == color) {
+
+            var row = cell.row
+            var col = cell.column
+
+
+            if(row==0 || row==7){
+                scores[2]++;
+            }else {
+                // Check for middle rows
+                if (row == 3 || row == 4) {
+                    //middle box
+                    if (col == 1 || col == 2) {
+                        scores[3]++;
+                    }
+                    //middle non-box
+                    else {
+                        scores[4]++;
+                    }
+                }
+
+
+                if (row < 7) {
+
+                    val lUp: Int = board.getPosition(row - 1, board.getUpDown(row, col, "Up")) - 1
+                    val rUp: Int = board.getPosition(row + 1, board.getUpDown(row, col, "Up")) - 1
+                    val lDown: Int = board.getPosition(row - 1, board.getUpDown(row, col, "Down")) - 1
+                    val rDown: Int = board.getPosition(row + 1, board.getUpDown(row, col, "Down")) - 1
+
+                    if (col > 0 && col < 3) {
+                        if (board.board[rUp].color == enemyColor && board.board[lDown].color== "NONE") {
+                            scores[5]++
+                        }
+                        else if (board.board[rDown].color == enemyColor && board.board[lUp].color == "NONE") {
+                            scores[5]++
+                        }
+                        else if (board.board[lUp].color == enemyColor && board.board[lUp].king && board.board[rDown].color == "NONE") {
+                            scores[5]++
+                        }
+                        else if (board.board[lDown].color == enemyColor && board.board[lDown].king && board.board[rUp].color == "NONE") {
+                            scores[5]++
+                        }
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    var result = 0.0
+    for((i,sc) in scores.withIndex()){
+        result += sc * weights[i]
+    }
+
+    return result
+}
+
+
 
 //
 //fun getAIMoveBlack(
@@ -353,11 +431,11 @@ fun getMinimaxMove(
 
     if (board.attackMoves.isNotEmpty()) moves = board.attackMoves
 
-    val scores = FloatArray(moves.size)
+    val scores = DoubleArray(moves.size)
     var maxScoreIndex = 0
     var i = 0
-    var alpha: Float = NEGATIVE_INFINITY //alpha keeps track of max score
-    val beta: Float = POSITIVE_INFINITY //beta keeps track of mini score
+    var alpha: Double = NEGATIVE_INFINITY //alpha keeps track of max score
+    val beta: Double = POSITIVE_INFINITY //beta keeps track of mini score
 
     for (move in moves) {
 
@@ -377,9 +455,9 @@ fun getMinimaxScore(
     board: Board,
     depth: Int,
     maxing: Boolean,
-    alpha: Float,
-    beta: Float
-): Float {
+    alpha: Double,
+    beta: Double
+): Double {
 
     var alpha = alpha
     var beta = beta
@@ -396,7 +474,7 @@ fun getMinimaxScore(
 
     return if (maxing) //maximising
     {
-        var best: Float = NEGATIVE_INFINITY
+        var best: Double = NEGATIVE_INFINITY
         for (move in moves) {
 
             val newBoard = performMove(move, board, enemyColor)
@@ -409,7 +487,7 @@ fun getMinimaxScore(
         best
     } else  //minimising
     {
-        var best: Float = POSITIVE_INFINITY
+        var best: Double = POSITIVE_INFINITY
         for (move in moves) {
 
             val newBoard = performMove(move, board, enemyColor)

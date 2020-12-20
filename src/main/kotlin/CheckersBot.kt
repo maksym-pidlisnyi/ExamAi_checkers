@@ -106,7 +106,20 @@ class CheckersBot(val teamName: String) : Runnable {
                 board = Board(game.board, player.color)
 
                 //val move =   if (player.color == "RED") getAIMoveRed(board, 4, game.whose_turn) else getAIMoveBlack(board, 6, game.whose_turn)
-                val move = getMinimaxMove(board, 6)
+                val move : Move?
+                if(game.last_move != null && game.last_move!!.player == player.color) {
+                    var cellToFind : Cell? = null
+                    for(cell in board.cells){
+                        if(cell.position == game.last_move!!.getLastMoveTo()) {
+                            cellToFind = cell
+                            break
+                        }
+                    }
+                    move = getMinimaxMove(board, 4, cellToFind)
+                } else {
+                    move = getMinimaxMove(board, 4, null)
+                }
+
                 if (move != null) {
                     move(move.from.position, move.to.position)
                 }
